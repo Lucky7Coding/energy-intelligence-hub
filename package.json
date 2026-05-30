@@ -1,0 +1,20 @@
+{
+  "name": "energy-intelligence-hub",
+  "version": "1.0.0",
+  "description": "Energy Intelligence Hub - Advanced fuel costs and Brent crude oil analysis",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "echo 'No build step needed for static assets'"
+  },
+  "dependencies": {
+    "itty-router": "^4.1.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0",
+    "@cloudflare/workers-types": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
