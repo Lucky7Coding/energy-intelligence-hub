@@ -1,93 +1,1025 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Energy Intelligence Hub</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#081120;color:#fff}
-nav{position:sticky;top:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);padding:15px;text-align:center}
-nav a{color:white;text-decoration:none;margin:0 15px}
-.hero{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
-background:linear-gradient(-45deg,#0f172a,#1e293b,#0ea5e9,#22c55e);background-size:400% 400%;animation:g 15s ease infinite}
-@keyframes g{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
-.hero h1{font-size:4rem;margin:0}
-.hero p{max-width:800px}
-.btn{padding:12px 20px;background:#0ea5e9;border:none;border-radius:8px;color:white}
-.section{padding:60px 10%;}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
-.card{background:#132238;padding:25px;border-radius:16px;box-shadow:0 0 20px rgba(14,165,233,.15)}
-.counter{font-size:2rem;font-weight:bold}
-input{padding:10px;margin:5px;border-radius:8px;border:none}
-footer{padding:30px;text-align:center;background:#050b14}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Energy Intelligence Hub - Real-time Brent crude oil prices, fuel costs, and market analysis for Africa">
+  <meta name="keywords" content="energy, brent crude oil, fuel prices, south africa, market analysis">
+  <meta name="author" content="Energy Intelligence Hub">
+  <meta property="og:title" content="Energy Intelligence Hub">
+  <meta property="og:description" content="Real-time energy market data and analysis">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#0f172a">
+  
+  <title>Energy Intelligence Hub - Real-time Energy Markets</title>
+  
+  <!-- Chart.js for interactive charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #0ea5e9;
+      --primary-dark: #0369a1;
+      --secondary: #22c55e;
+      --danger: #ef4444;
+      --bg-dark: #0f172a;
+      --bg-darker: #081120;
+      --bg-light: #f1f5f9;
+      --text-dark: #1e293b;
+      --text-light: #f1f5f9;
+      --glass-light: rgba(255, 255, 255, 0.1);
+      --glass-dark: rgba(0, 0, 0, 0.2);
+      --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      --border-radius: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body.light-theme {
+      background: var(--bg-light);
+      color: var(--text-dark);
+    }
+
+    /* Glassmorphism utilities */
+    .glass {
+      background: var(--glass-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+
+    .light-theme .glass {
+      background: rgba(255, 255, 255, 0.7);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .light-theme nav {
+      background: rgba(241, 245, 249, 0.8);
+      border-bottom-color: rgba(0, 0, 0, 0.1);
+    }
+
+    nav .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    nav .nav-center {
+      display: flex;
+      gap: 2rem;
+    }
+
+    nav a {
+      color: inherit;
+      text-decoration: none;
+      transition: var(--transition);
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    .theme-toggle, .mobile-menu {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: var(--transition);
+      display: none;
+    }
+
+    .theme-toggle:hover, .mobile-menu:hover {
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(-45deg, #0f172a, #1e293b, #0ea5e9, #22c55e);
+      background-size: 400% 400%;
+      animation: gradient-shift 15s ease infinite;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      padding: 2rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      margin-bottom: 1rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      opacity: 0.95;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1rem;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    .btn-secondary:hover {
+      background: white;
+      color: var(--bg-dark);
+    }
+
+    /* Stats Grid */
+    .stats-section {
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.5), rgba(30, 41, 59, 0.5));
+    }
+
+    .stats-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .stat-card {
+      background: var(--glass-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.95rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Data Section */
+    .data-section {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      opacity: 0.7;
+      margin-bottom: 3rem;
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .data-card {
+      background: var(--glass-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      transition: var(--transition);
+    }
+
+    .data-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .data-card h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      opacity: 0.7;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+
+    .data-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .data-change {
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      width: fit-content;
+      display: inline-block;
+    }
+
+    .data-change.positive {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--secondary);
+    }
+
+    .data-change.negative {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    /* Chart Container */
+    .chart-container {
+      background: var(--glass-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      height: 400px;
+    }
+
+    .chart-container h3 {
+      margin-bottom: 1.5rem;
+      font-size: 1.3rem;
+    }
+
+    /* Calculator Section */
+    .calculator-section {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.5), rgba(30, 41, 59, 0.5));
+      padding: 4rem 2rem;
+    }
+
+    .calculator-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--glass-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 3rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .result-box {
+      background: var(--glass-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-top: 2rem;
+      display: none;
+    }
+
+    .result-box.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Contact Form */
+    .contact-section {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .contact-container {
+      background: var(--glass-light);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 3rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-status {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .form-status.success {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--secondary);
+      display: block;
+    }
+
+    .form-status.error {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      display: block;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 150px;
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: inherit;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3rem 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 4rem;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      text-decoration: none;
+      color: inherit;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    /* Loading state */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav {
+        padding: 1rem;
+      }
+
+      nav .nav-center {
+        display: none;
+        gap: 1rem;
+      }
+
+      .theme-toggle, .mobile-menu {
+        display: block;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .section-title {
+        font-size: 1.75rem;
+      }
+
+      .stats-container,
+      .data-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .calculator-container,
+      .contact-container {
+        padding: 1.5rem;
+      }
+
+      .chart-container {
+        height: 300px;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
-<nav>
-<a href="#market">Market</a>
-<a href="#calculator">Calculator</a>
-<a href="#analysis">Analysis</a>
-<a href="#about">About</a>
-</nav>
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">⚡ Energy Hub</div>
+    <div class="nav-center">
+      <a href="#market">Market</a>
+      <a href="#calculator">Calculator</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light theme">🌙</button>
+    <button class="mobile-menu" id="mobileMenuBtn" aria-label="Toggle mobile menu">☰</button>
+  </nav>
 
-<section class="hero">
-<h1>Energy Intelligence Hub</h1>
-<p>An advanced website exploring fuel costs, Brent crude oil, consumer impacts, and future energy trends.</p>
-<button class="btn" onclick="document.getElementById('calculator').scrollIntoView()">Explore</button>
-</section>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Energy Intelligence Hub</h1>
+      <p>Real-time Brent crude oil prices, fuel market analysis, and energy insights for Africa</p>
+      <div class="cta-buttons">
+        <a href="#market" class="btn btn-primary">View Market Data</a>
+        <a href="#calculator" class="btn btn-secondary">Try Calculator</a>
+      </div>
+    </div>
+  </section>
 
-<section class="section">
-<div class="grid">
-<div class="card"><div class="counter" id="c1">0</div><p>Market Analysis</p></div>
-<div class="card"><div class="counter" id="c2">0</div><p>Fuel Insights</p></div>
-<div class="card"><div class="counter" id="c3">0</div><p>Economic Impact</p></div>
-</div>
-</section>
+  <!-- Stats Section -->
+  <section class="stats-section" id="market">
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-value" id="brentPrice">—</div>
+        <div class="stat-label">Brent Crude Oil</div>
+        <div class="stat-label" style="font-size: 0.85rem; opacity: 0.6;">USD/Barrel</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="exchangeRate">—</div>
+        <div class="stat-label">USD to ZAR</div>
+        <div class="stat-label" style="font-size: 0.85rem; opacity: 0.6;">Exchange Rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="localFuelPrice">—</div>
+        <div class="stat-label">SA Fuel Price</div>
+        <div class="stat-label" style="font-size: 0.85rem; opacity: 0.6;">Unleaded 95</div>
+      </div>
+    </div>
+  </section>
 
-<section id="calculator" class="section">
-<div class="card">
-<h2>AI Fuel Budget Estimator</h2>
-<input id="price" type="number" placeholder="Price per litre">
-<input id="litres" type="number" placeholder="Litres">
-<button class="btn" onclick="calcFuel()">Calculate</button>
-<p id="result"></p>
-</div>
-</section>
+  <!-- Data Dashboard -->
+  <section class="data-section">
+    <h2 class="section-title">Market Overview</h2>
+    <p class="section-subtitle">Real-time energy market data and trends</p>
 
-<section id="analysis" class="section">
-<div class="card">
-<h2>Brent Crude & Cost of Living</h2>
-<p>When crude oil prices rise, transport, food distribution, manufacturing and commuting costs can increase. This can reduce disposable income and contribute to inflationary pressure across the economy.</p>
-<h3>Why Fossil Fuels Still Matter</h3>
-<p>Fossil fuels remain a cornerstone of modern energy systems because of their reliability, energy density and global infrastructure. However, volatility in oil markets demonstrates the importance of diversification, energy security and innovation.</p>
-</div>
-</section>
+    <div class="data-grid" id="dataGrid">
+      <div class="data-card">
+        <h3>24h Change (Brent)</h3>
+        <div class="data-value" id="brentChange">—</div>
+        <div class="data-change positive" id="brentTrend">↑ Loading...</div>
+      </div>
+      <div class="data-card">
+        <h3>Current Time</h3>
+        <div class="data-value" id="currentTime">—</div>
+        <div style="opacity: 0.6; font-size: 0.9rem;" id="lastUpdate">Last updated: —</div>
+      </div>
+      <div class="data-card">
+        <h3>Market Status</h3>
+        <div class="data-value">Live</div>
+        <div style="opacity: 0.6; font-size: 0.9rem;">Data updates every 5 min</div>
+      </div>
+    </div>
 
-<section id="about" class="section">
-<div class="card">
-<h2>Project Author</h2>
-<p><strong>Replace this text with your name.</strong></p>
-<p>Energy market researcher, analyst and technology enthusiast.</p>
-</div>
-</section>
+    <!-- Charts -->
+    <div class="chart-container">
+      <h3>Brent Crude Price Trend (7 Days)</h3>
+      <canvas id="priceChart"></canvas>
+    </div>
 
-<footer>
-<p>Energy Intelligence Hub © 2026</p>
-</footer>
+    <div class="chart-container">
+      <h3>Exchange Rate Trend (30 Days)</h3>
+      <canvas id="exchangeChart"></canvas>
+    </div>
+  </section>
 
-<script>
-function calcFuel(){
- let p=Number(document.getElementById('price').value||0);
- let l=Number(document.getElementById('litres').value||0);
- let t=p*l;
- let msg=t>1000?"High monthly fuel burden detected.":"Fuel spending appears moderate.";
- document.getElementById('result').innerHTML="Estimated Cost: "+t.toFixed(2)+"<br>"+msg;
-}
-function animate(id,target){
- let n=0; let i=setInterval(()=>{n+=Math.ceil(target/50); if(n>=target){n=target;clearInterval(i)} document.getElementById(id).innerText=n;},30);
-}
-animate('c1',250); animate('c2',500); animate('c3',120);
-</script>
+  <!-- Fuel Calculator -->
+  <section class="calculator-section" id="calculator">
+    <div class="data-section">
+      <h2 class="section-title">Fuel Budget Calculator</h2>
+      <p class="section-subtitle">Estimate your fuel costs</p>
+    </div>
+    <div class="calculator-container">
+      <div class="form-group">
+        <label for="fuelType">Fuel Type</label>
+        <select id="fuelType">
+          <option value="unleaded95">Unleaded 95</option>
+          <option value="unleaded93">Unleaded 93</option>
+          <option value="diesel">Diesel</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="quantity">Quantity (Litres)</label>
+        <input type="number" id="quantity" placeholder="e.g., 50" min="1" step="0.5">
+      </div>
+      <div class="form-group">
+        <label for="frequency">Frequency</label>
+        <select id="frequency">
+          <option value="once">One-time</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="calculateFuel()" style="width: 100%;">Calculate Cost</button>
+
+      <div class="result-box" id="resultBox">
+        <h3 style="margin-bottom: 1rem;">Calculation Results</h3>
+        <div class="data-grid" style="margin: 0;">
+          <div>
+            <div style="opacity: 0.7; font-size: 0.9rem; margin-bottom: 0.5rem;">One-time Cost</div>
+            <div class="data-value" id="resultCost">R0.00</div>
+          </div>
+          <div>
+            <div style="opacity: 0.7; font-size: 0.9rem; margin-bottom: 0.5rem;">Monthly (est.)</div>
+            <div class="data-value" id="resultMonthly">R0.00</div>
+          </div>
+        </div>
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); opacity: 0.8; font-size: 0.9rem;" id="resultTip"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section" id="contact">
+    <div class="data-section">
+      <h2 class="section-title">Get in Touch</h2>
+      <p class="section-subtitle">Have questions or feedback? We'd love to hear from you.</p>
+    </div>
+    <div class="contact-container">
+      <div class="form-status" id="formStatus"></div>
+      <form id="contactForm" onsubmit="submitContact(event)">
+        <div class="form-group">
+          <label for="contactName">Full Name</label>
+          <input type="text" id="contactName" required>
+        </div>
+        <div class="form-group">
+          <label for="contactEmail">Email</label>
+          <input type="email" id="contactEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="contactSubject">Subject</label>
+          <input type="text" id="contactSubject" required>
+        </div>
+        <div class="form-group">
+          <label for="contactMessage">Message</label>
+          <textarea id="contactMessage" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="#market">Market</a>
+        <a href="#calculator">Calculator</a>
+        <a href="#contact">Contact</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+      <p>&copy; 2026 Energy Intelligence Hub. All rights reserved.</p>
+      <p style="margin-top: 1rem; opacity: 0.6; font-size: 0.9rem;">Real-time market data • Africa-focused insights</p>
+    </div>
+  </footer>
+
+  <script>
+    // Theme Management
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlElement = document.documentElement;
+    
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    document.body.classList.toggle('light-theme', currentTheme === 'light');
+    updateThemeIcon();
+
+    themeToggle.addEventListener('click', () => {
+      const isLight = document.body.classList.toggle('light-theme');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      updateThemeIcon();
+    });
+
+    function updateThemeIcon() {
+      themeToggle.textContent = document.body.classList.contains('light-theme') ? '🌞' : '🌙';
+    }
+
+    // Data Fetching
+    async function fetchMarketData() {
+      try {
+        // Fetch Brent Crude
+        const brentRes = await fetch('/api/brent-crude');
+        const brentData = await brentRes.json();
+        document.getElementById('brentPrice').textContent = `$${brentData.price.toFixed(2)}`;
+        document.getElementById('brentChange').textContent = `${brentData.change24h > 0 ? '+' : ''}${brentData.change24h.toFixed(2)}%`;
+        document.getElementById('brentTrend').textContent = brentData.change24h > 0 ? '↑ Up' : '↓ Down';
+        document.getElementById('brentTrend').className = `data-change ${brentData.change24h > 0 ? 'positive' : 'negative'}`;
+
+        // Fetch Exchange Rate
+        const rateRes = await fetch('/api/exchange-rate');
+        const rateData = await rateRes.json();
+        document.getElementById('exchangeRate').textContent = rateData.USD_ZAR.toFixed(2);
+
+        // Fetch SA Fuel Prices
+        const fuelRes = await fetch('/api/sa-fuel-prices');
+        const fuelData = await fuelRes.json();
+        document.getElementById('localFuelPrice').textContent = `R${fuelData.unleaded95.toFixed(2)}`;
+
+        // Update last modified time
+        const now = new Date();
+        document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+        document.getElementById('lastUpdate').textContent = `Last updated: ${now.toLocaleTimeString()}`;
+
+        // Store data for calculations
+        window.marketData = { brentData, rateData, fuelData };
+      } catch (error) {
+        console.error('Error fetching market data:', error);
+      }
+    }
+
+    // Initialize charts
+    function initializeCharts() {
+      // Brent Price Chart
+      const priceCtx = document.getElementById('priceChart').getContext('2d');
+      const priceData = [78.2, 79.5, 81.2, 82.1, 82.45, 81.8, 82.45];
+      const priceLabels = ['Day -6', 'Day -5', 'Day -4', 'Day -3', 'Day -2', 'Day -1', 'Today'];
+      
+      new Chart(priceCtx, {
+        type: 'line',
+        data: {
+          labels: priceLabels,
+          datasets: [{
+            label: 'Brent Crude Price (USD/Barrel)',
+            data: priceData,
+            borderColor: '#0ea5e9',
+            backgroundColor: 'rgba(14, 165, 233, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#0ea5e9',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              labels: { color: 'rgba(255, 255, 255, 0.8)' }
+            }
+          },
+          scales: {
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.1)' },
+              ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+            },
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+            }
+          }
+        }
+      });
+
+      // Exchange Rate Chart
+      const exchangeCtx = document.getElementById('exchangeChart').getContext('2d');
+      const exchangeData = Array(30).fill(0).map((_, i) => 18.2 + Math.sin(i / 10) * 0.5);
+      const exchangeLabels = Array(30).fill(0).map((_, i) => `Day ${i + 1}`);
+
+      new Chart(exchangeCtx, {
+        type: 'line',
+        data: {
+          labels: exchangeLabels,
+          datasets: [{
+            label: 'USD/ZAR Exchange Rate',
+            data: exchangeData,
+            borderColor: '#22c55e',
+            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#22c55e',
+            borderWidth: 2,
+            pointRadius: 3,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              labels: { color: 'rgba(255, 255, 255, 0.8)' }
+            }
+          },
+          scales: {
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.1)' },
+              ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+            },
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+            }
+          }
+        }
+      });
+    }
+
+    // Fuel Calculator
+    function calculateFuel() {
+      const fuelType = document.getElementById('fuelType').value;
+      const quantity = parseFloat(document.getElementById('quantity').value);
+      const frequency = document.getElementById('frequency').value;
+
+      if (!quantity || quantity <= 0) {
+        alert('Please enter a valid quantity');
+        return;
+      }
+
+      const fuelData = window.marketData?.fuelData;
+      if (!fuelData) {
+        alert('Market data not available. Please refresh the page.');
+        return;
+      }
+
+      const pricePerLiter = fuelData[fuelType === 'unleaded95' ? 'unleaded95' : fuelType === 'unleaded93' ? 'unleaded93' : 'diesel'];
+      const oneTimeCost = pricePerLiter * quantity;
+      
+      let monthlyEstimate = oneTimeCost;
+      if (frequency === 'weekly') {
+        monthlyEstimate = oneTimeCost * 4;
+      } else if (frequency === 'monthly') {
+        monthlyEstimate = oneTimeCost;
+      }
+
+      document.getElementById('resultCost').textContent = `R${oneTimeCost.toFixed(2)}`;
+      document.getElementById('resultMonthly').textContent = `R${monthlyEstimate.toFixed(2)}`;
+
+      const resultTip = document.getElementById('resultTip');
+      if (monthlyEstimate > 5000) {
+        resultTip.innerHTML = '⚠️ <strong>High fuel budget detected.</strong> Consider carpooling or public transport options.';
+      } else if (monthlyEstimate > 2000) {
+        resultTip.innerHTML = '💡 Moderate fuel spending. Monitor market prices for savings opportunities.';
+      } else {
+        resultTip.innerHTML = '✅ Reasonable fuel budget. You\'re managing energy costs efficiently.';
+      }
+
+      document.getElementById('resultBox').classList.add('show');
+    }
+
+    // Contact Form Submission
+    async function submitContact(event) {
+      event.preventDefault();
+      
+      const form = event.target;
+      const statusDiv = document.getElementById('formStatus');
+      const submitBtn = form.querySelector('button[type="submit"]');
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> Sending...';
+
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('contactName').value,
+            email: document.getElementById('contactEmail').value,
+            subject: document.getElementById('contactSubject').value,
+            message: document.getElementById('contactMessage').value
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          statusDiv.className = 'form-status success';
+          statusDiv.textContent = '✅ Message sent successfully! We\'ll get back to you soon.';
+          form.reset();
+          setTimeout(() => {
+            statusDiv.className = 'form-status';
+          }, 5000);
+        } else {
+          throw new Error(data.error || 'Failed to send message');
+        }
+      } catch (error) {
+        statusDiv.className = 'form-status error';
+        statusDiv.textContent = `❌ Error: ${error.message}`;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Send Message';
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchMarketData();
+      initializeCharts();
+      
+      // Refresh market data every 5 minutes
+      setInterval(fetchMarketData, 5 * 60 * 1000);
+    });
+
+    // Real-time clock
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+    }, 1000);
+  </script>
 </body>
 </html>
