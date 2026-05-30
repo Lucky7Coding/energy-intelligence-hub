@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energy Intelligence Hub</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#081120;color:#fff}
+nav{position:sticky;top:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);padding:15px;text-align:center}
+nav a{color:white;text-decoration:none;margin:0 15px}
+.hero{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+background:linear-gradient(-45deg,#0f172a,#1e293b,#0ea5e9,#22c55e);background-size:400% 400%;animation:g 15s ease infinite}
+@keyframes g{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+.hero h1{font-size:4rem;margin:0}
+.hero p{max-width:800px}
+.btn{padding:12px 20px;background:#0ea5e9;border:none;border-radius:8px;color:white}
+.section{padding:60px 10%;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.card{background:#132238;padding:25px;border-radius:16px;box-shadow:0 0 20px rgba(14,165,233,.15)}
+.counter{font-size:2rem;font-weight:bold}
+input{padding:10px;margin:5px;border-radius:8px;border:none}
+footer{padding:30px;text-align:center;background:#050b14}
+</style>
+</head>
+<body>
+<nav>
+<a href="#market">Market</a>
+<a href="#calculator">Calculator</a>
+<a href="#analysis">Analysis</a>
+<a href="#about">About</a>
+</nav>
+
+<section class="hero">
+<h1>Energy Intelligence Hub</h1>
+<p>An advanced website exploring fuel costs, Brent crude oil, consumer impacts, and future energy trends.</p>
+<button class="btn" onclick="document.getElementById('calculator').scrollIntoView()">Explore</button>
+</section>
+
+<section class="section">
+<div class="grid">
+<div class="card"><div class="counter" id="c1">0</div><p>Market Analysis</p></div>
+<div class="card"><div class="counter" id="c2">0</div><p>Fuel Insights</p></div>
+<div class="card"><div class="counter" id="c3">0</div><p>Economic Impact</p></div>
+</div>
+</section>
+
+<section id="calculator" class="section">
+<div class="card">
+<h2>AI Fuel Budget Estimator</h2>
+<input id="price" type="number" placeholder="Price per litre">
+<input id="litres" type="number" placeholder="Litres">
+<button class="btn" onclick="calcFuel()">Calculate</button>
+<p id="result"></p>
+</div>
+</section>
+
+<section id="analysis" class="section">
+<div class="card">
+<h2>Brent Crude & Cost of Living</h2>
+<p>When crude oil prices rise, transport, food distribution, manufacturing and commuting costs can increase. This can reduce disposable income and contribute to inflationary pressure across the economy.</p>
+<h3>Why Fossil Fuels Still Matter</h3>
+<p>Fossil fuels remain a cornerstone of modern energy systems because of their reliability, energy density and global infrastructure. However, volatility in oil markets demonstrates the importance of diversification, energy security and innovation.</p>
+</div>
+</section>
+
+<section id="about" class="section">
+<div class="card">
+<h2>Project Author</h2>
+<p><strong>Replace this text with your name.</strong></p>
+<p>Energy market researcher, analyst and technology enthusiast.</p>
+</div>
+</section>
+
+<footer>
+<p>Energy Intelligence Hub © 2026</p>
+</footer>
+
+<script>
+function calcFuel(){
+ let p=Number(document.getElementById('price').value||0);
+ let l=Number(document.getElementById('litres').value||0);
+ let t=p*l;
+ let msg=t>1000?"High monthly fuel burden detected.":"Fuel spending appears moderate.";
+ document.getElementById('result').innerHTML="Estimated Cost: "+t.toFixed(2)+"<br>"+msg;
+}
+function animate(id,target){
+ let n=0; let i=setInterval(()=>{n+=Math.ceil(target/50); if(n>=target){n=target;clearInterval(i)} document.getElementById(id).innerText=n;},30);
+}
+animate('c1',250); animate('c2',500); animate('c3',120);
+</script>
+</body>
+</html>
